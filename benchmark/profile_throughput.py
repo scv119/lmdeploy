@@ -10,7 +10,7 @@ import fire
 
 from lmdeploy.turbomind import Tokenizer, TurboMind
 
-default_prompt = "token " * 700
+default_prompt = "token " * 1
 
 
 def sample_requests(
@@ -34,24 +34,11 @@ def sample_requests(
     completion_token_ids = tokenizer(completions).input_ids
     tokenized_dataset = []
     for i in range(len(dataset)):
-        output_len = len(completion_token_ids[i])
-        tokenized_dataset.append((prompts[i], prompt_token_ids[i], output_len))
-
-    # Filter out too long sequences.
-    filtered_dataset: List[Tuple[str, int, int]] = []
-    for prompt, prompt_token_ids, output_len in tokenized_dataset:
-        prompt_len = len(prompt_token_ids)
-        if prompt_len < 4 or output_len < 4:
-            # Prune too short sequences.
-            continue
-        if prompt_len > 1024 or prompt_len + output_len > 2048:
-            # Prune too long sequences.
-            continue
-        output_len = 550
-        filtered_dataset.append((prompt, prompt_len, output_len))
+        output_len = 512
+        tokenized_dataset.append((prompts[i], len(prompt_token_ids[i]), output_len))
 
     # Sample the requests.
-    sampled_requests = random.sample(filtered_dataset, num_requests)
+    sampled_requests = random.sample(tokenized_dataset, num_requests)
     return sampled_requests
 
 
