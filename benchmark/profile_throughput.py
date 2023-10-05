@@ -10,6 +10,8 @@ import fire
 
 from lmdeploy.turbomind import Tokenizer, TurboMind
 
+default_prompt = "token " * 700
+
 
 def sample_requests(
     dataset_path: str,
@@ -26,7 +28,7 @@ def sample_requests(
                 data['conversations'][1]['value']) for data in dataset]
 
     # Tokenize the prompts and completions.
-    prompts = [prompt for prompt, _ in dataset]
+    prompts = [default_prompt for prompt, _ in dataset]
     prompt_token_ids = tokenizer(prompts).input_ids
     completions = [completion for _, completion in dataset]
     completion_token_ids = tokenizer(completions).input_ids
@@ -45,7 +47,7 @@ def sample_requests(
         if prompt_len > 1024 or prompt_len + output_len > 2048:
             # Prune too long sequences.
             continue
-        output_len = 1024 
+        output_len = 550
         filtered_dataset.append((prompt, prompt_len, output_len))
 
     # Sample the requests.
@@ -75,7 +77,6 @@ class Engine:
             else:
                 prompt, _, output_seqlen = request
                 input_ids = self.tokenizer.encode(prompt)
-                input_ids = input_ids[:1]
 
                 for outputs in model_inst.stream_infer(
                         session_id,
