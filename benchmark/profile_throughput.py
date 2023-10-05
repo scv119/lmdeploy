@@ -45,6 +45,7 @@ def sample_requests(
         if prompt_len > 1024 or prompt_len + output_len > 2048:
             # Prune too long sequences.
             continue
+        output_len = 1024 
         filtered_dataset.append((prompt, prompt_len, output_len))
 
     # Sample the requests.
@@ -117,7 +118,7 @@ class Engine:
 def main(dataset: str,
          model_path: str,
          concurrency: int = 1,
-         num_prompts: int = 1000,
+         num_prompts: int = 1,
          tp: int = 1):
 
     engine = Engine(model_path, tp=tp)
