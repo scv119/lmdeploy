@@ -75,6 +75,7 @@ class Engine:
             else:
                 prompt, _, output_seqlen = request
                 input_ids = self.tokenizer.encode(prompt)
+                input_ids = input_ids[:1]
 
                 for outputs in model_inst.stream_infer(
                         session_id,
